@@ -5,33 +5,31 @@ import (
 	"sync"
 )
 
-func recv(c <-chan string, wg *sync.WaitGroup) {
+func recv(ch <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for {
-		s, ok := <-c
-		if !ok {
-			fmt.Println("* channel closed")
-			break
-		}
-		fmt.Println("[R]", s)
-	}
+	s := <-ch
+	fmt.Println("[R]", s)
 }
 
-func send(c chan<- string, wg *sync.WaitGroup) {
+func send(ch chan<- string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Println("[S] Sending...")
-	for i := 0; i < 5; i++ {
-		c <- fmt.Sprintf("Hello %d", i)
-	}
+	ch <- "Hello"
+	ch <- "World"
+	ch <- "Bye"
+	close(ch)
 	fmt.Println("[S] Done")
-	close(c)
 }
 
 func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
-	c := make(chan string)
-	go recv(c, &wg)
-	go send(c, &wg)
+
+	ch := make(chan string, 3)
+	go recv(ch, &wg)
+	go send(ch, &wg)
 	wg.Wait()
+
+	for s := range ch {
+		fmt.Println("[Z]", s)
+	}
 }
