@@ -1,13 +1,15 @@
-struct Rectangle {
-    width: u32,
-    height: u32,
+struct User {
+    username: &str,
+    email: &str,
+    sing_in_count: u64,
+    active: bool,
 }
 
 fn main() {
-    let rect1 = Rectangle {
-        width: 30,
-        height: 50,
+    let user1 = User {
+        email: "someone@example.com",
+        username: "someusername123",
+        active: true,
+        sign_in_count: 1,
     };
-
-    println!("rect1 is {}", rect1)
 }
